@@ -10,13 +10,17 @@ import { notFound } from 'next/navigation';
 export const revalidate = 60;
 
 export default async function IssuePage({ params }) {
-  let issue = null;
-  let usingFallback = false;
+  // Mismo principio que en app/page.js (ver lib/resolveIssue.js): el Issue
+  // que se muestra es SIEMPRE un único objeto completo — el de Sanity, o el
+  // demo — nunca una mezcla campo por campo de los dos.
+  let sanityIssue = null;
   try {
-    issue = await client.fetch(ISSUE_BY_SLUG_QUERY, { slug: params.slug });
+    sanityIssue = await client.fetch(ISSUE_BY_SLUG_QUERY, { slug: params.slug });
   } catch (e) {
     // sin conexión a Sanity todavía
   }
+  let issue = sanityIssue;
+  let usingFallback = false;
   if (!issue) {
     if (params.slug === DEMO_ISSUE.slug) {
       issue = DEMO_ISSUE;
