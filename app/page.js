@@ -4,21 +4,22 @@ import Footer from '@/components/Footer';
 import { client, urlFor } from '@/lib/sanity';
 import { CURRENT_ISSUE_QUERY } from '@/lib/queries';
 import { DEMO_ISSUE, KIND_LABEL } from '@/lib/demoData';
+import { resolveIssue } from '@/lib/resolveIssue';
 
 export const revalidate = 60; // vuelve a pedir datos a Sanity cada 60s como máximo
 
 export default async function HomePage() {
-  let issue = DEMO_ISSUE;
-  let usingFallback = true;
+  // sanityIssue es null si Sanity no tiene ningún Issue con isCurrent==true
+  // publicado (o si la consulta falla). resolveIssue() NO mezcla campo por
+  // campo: es el Issue de Sanity completo, o el Issue demo completo — nunca
+  // los dos combinados. Ver lib/resolveIssue.js.
+  let sanityIssue = null;
   try {
-    const data = await client.fetch(CURRENT_ISSUE_QUERY);
-    if (data) {
-      issue = data;
-      usingFallback = false;
-    }
+    sanityIssue = await client.fetch(CURRENT_ISSUE_QUERY);
   } catch (e) {
-    // Sin Sanity conectado todavía (o sin datos cargados) -> se muestra contenido de ejemplo.
+    // Sin Sanity conectado todavía (o la consulta falló) -> sanityIssue queda en null.
   }
+  const { issue, usingFallback } = resolveIssue(sanityIssue, DEMO_ISSUE);
 
   const heroUrl = issue.heroImage ? urlFor(issue.heroImage).width(2400).height(1600).url() : null;
   const pieces = issue.pieces || [];
