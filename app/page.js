@@ -49,10 +49,20 @@ export default async function HomePage() {
           <span className="brand">LATAMesa — Revista editorial</span>
           <span className="theme">Issue {issue.number}</span>
           <span className="theme serif-ish">{issue.theme}</span>
+          {(issue.season || issue.period) && (
+            <span style={{ fontSize: 12, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,.75)', marginTop: -6, marginBottom: 6 }}>
+              {issue.season}{issue.season && issue.period ? ' · ' : ''}{issue.period}
+            </span>
+          )}
           <div className="names">
             {(issue.collaborators || []).map((name) => <div key={name}>{name}</div>)}
           </div>
-          <Link className="more lt-focus" href={`/issue/${issue.slug}`}>Ver issue completo →</Link>
+          {issue.description && (
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, lineHeight: 1.6, color: 'rgba(255,255,255,.85)', maxWidth: '52ch', margin: '16px auto 0', textTransform: 'none', letterSpacing: 'normal' }}>
+              {issue.description}
+            </p>
+          )}
+          <Link className="more lt-focus" href={`/issue/${issue.slug}`} style={{ marginTop: 16 }}>Ver issue completo →</Link>
         </div>
       </section>
 
@@ -106,7 +116,7 @@ export default async function HomePage() {
           <div className="scrim-b" aria-hidden="true"></div>
           <span className="corner">Fig. 07 — {bandPiece.imageCredit || 'Cortesía del artista'}</span>
           <div className="content">
-            <h2>El archivo como forma de estar en dos lugares</h2>
+            <h2>{bandPiece.title || issue.theme}</h2>
             <span className="go">Leer el issue completo
               <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true"><path d="M1 5h15.5M12 1l4.5 4L12 9" stroke="#fff" strokeWidth="1.4" /></svg>
             </span>
@@ -119,7 +129,20 @@ export default async function HomePage() {
         <div className="lt-wrap">
           <div className="hm-note-inner">
             <span className="lt-eyebrow">Nota editorial</span>
-            <p className="lt-quote">{issue.editorialQuote}</p>
+            {issue.editorialQuote && <p className="lt-quote">{issue.editorialQuote}</p>}
+            {issue.editorialNote && (
+              <p style={{ fontSize: 17, lineHeight: 1.7, color: 'rgba(21,21,21,.85)', marginTop: 24, maxWidth: '72ch' }}>
+                {issue.editorialNote}
+              </p>
+            )}
+            {(issue.editorName || issue.editorRole) && (
+              <p style={{ marginTop: 20, fontSize: 13, fontWeight: 600, letterSpacing: '.03em' }}>
+                {issue.editorName}
+                {issue.editorRole && (
+                  <span style={{ display: 'block', fontWeight: 400, color: 'rgba(21,21,21,.55)', marginTop: 2 }}>{issue.editorRole}</span>
+                )}
+              </p>
+            )}
           </div>
         </div>
       </section>
